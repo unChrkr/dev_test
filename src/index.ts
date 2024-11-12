@@ -34,11 +34,41 @@ const initializeDatabase = async () => {
 initializeDatabase();
 
 app.post('/users', async (req, res) => {
-// Crie o endpoint de users
+  try {
+    const user = AppDataSource.getRepository(User).create(req.body);
+    const result = await AppDataSource.getRepository(User).save(user);
+    res.send(result);
+  } catch (error) {
+    res.status(500).send("Erro ao criar usuário");
+  }
+});
+
+app.get('/users', async (req, res) => {
+  try {
+    const users = await AppDataSource.getRepository(User).find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).send("Erro ao obter usuários");
+  }
 });
 
 app.post('/posts', async (req, res) => {
-// Crie o endpoint de posts
+  try {
+    const post = AppDataSource.getRepository(Post).create(req.body);
+    const result = await AppDataSource.getRepository(Post).save(post);
+    res.send(result);
+  } catch (error) {
+    res.status(500).send("Erro ao criar post");
+  }
+});
+
+app.get('/posts', async (req, res) => {
+  try {
+    const posts = await AppDataSource.getRepository(Post).find({ relations: ['user'] });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).send("Erro ao obter posts");
+  }
 });
 
 const PORT = process.env.PORT || 3000;
